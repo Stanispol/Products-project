@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Product Management API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /products:
+    get:
+      summary: Получить список продуктов
+      responses:
+        '200':
+          description: Список продуктов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    price:
+                      type: number
+                    category:
+                      type: string
+
+    post:
+      summary: Создать новый продукт
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+      responses:
+        '201':
+          description: Продукт создан
+
+  /products/{id}:
+    get:
+      summary: Получить продукт по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID продукта
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Продукт найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  price:
+                    type: number
+                  category:
+                    type: string
+
+    put:
+      summary: Обновить продукт по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID продукта
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+      responses:
+        '200':
+          description: Продукт обновлен
+
+    delete:
+      summary: Удалить продукт по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID продукта
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Продукт удален
