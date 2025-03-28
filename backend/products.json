@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "name": "Ноутбук Samsung",
+    "price": 75000,
+    "description": "Мощный ноутбук для работы и учебы",
+    "categories": [
+      "Электроника",
+      "Компьютеры"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Гарнитура HyperX",
+    "price": 7000,
+    "description": "Игровая гарнитура с качественным звуком",
+    "categories": [
+      "Компьютеры",
+      "Аксессуары"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Iphone 14",
+    "price": "70000",
+    "description": "Хороший, новый",
+    "categories": [
+      "Электроника"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Чехол на Iphone XR",
+    "price": 999,
+    "description": "Черный, с рисунком",
+    "categories": [
+      "Аксессуары на телефон"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "PowerBank",
+    "price": 6000,
+    "description": "Мощный",
+    "categories": [
+      "Электроника"
+    ]
+  }
+]

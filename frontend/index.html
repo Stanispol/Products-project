@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Товары</title>
+  <link rel="stylesheet" href="index_style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Список товаров</h1>
+  </header>
+
+  <section id="product-list"></section>
+
+  <section id="chat">
+    <h2>Чат поддержки</h2>
+    <div id="chatContainer"></div>
+    <div id="inputContainer">
+      <input type="text" id="chatInput" placeholder="Введите сообщение...">
+      <button class="buttonchat" onclick="sendMessage()">Отправить</button>
+    </div>
+  </section>
+
+  <script>
+    const API_URL = "http://localhost:3001/graphql";
+
+    async function loadProducts() {
+      const query = `
+        {
+          products {
+            name
+            price
+          }
+        }`;
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+
+        const result = await response.json();
+        displayProducts(result.data.products);
+      } catch (error) {
+        console.error("Ошибка при загрузке товаров:", error);
+      }
+    }
+
+    function displayProducts(products) {
+      const productList = document.getElementById("product-list");
+
+      products.forEach(product => {
+        const productCard = document.createElement("div");
+        productCard.classList.add("product-card");
+
+        productCard.innerHTML = `
+          <h2>${product.name}</h2>
+          <p><strong>Цена:</strong> ${product.price} руб.</p>
+        `;
+
+        productList.appendChild(productCard);
+      });
+    }
+
+
+    loadProducts();
+
+    const socket = new WebSocket('ws://localhost:8081');
+
+    socket.onopen = () => {
+        console.log('Подключено к WebSocket серверу');
+    };
+    socket.onmessage = (event) => {
+    try {
+        const data = JSON.parse(event.data);
+
+        if (data.history) {
+    data.history.forEach(msg => displayMessage(JSON.stringify(msg)));
+
+        } else if (data.text) {
+            // Если получено обычное сообщение
+            displayMessage(data.text);
+        }
+    } catch (error) {
+        console.error('Ошибка обработки сообщения:', error);
+    }
+};
+
+
+    socket.onclose = () => {
+        console.log('WebSocket соединение закрыто');
+    };
+
+    function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+
+    if (message) {
+        socket.send(JSON.stringify({ sender: 'client', text: message }));
+        input.value = '';
+
+        setTimeout(() => {
+            location.reload();
+        }, 100);
+    }
+}
+
+function displayMessage(message) {
+    const chatContainer = document.getElementById('chatContainer');
+    const messageElement = document.createElement('p');
+
+    let data;
+
+    try {
+        if (typeof message === 'string') {
+            const parsedMessage = JSON.parse(message);
+            if (typeof parsedMessage.text === 'string') {
+                data = JSON.parse(parsedMessage.text);  
+            } else {
+                data = parsedMessage;
+            }
+        } else {
+            data = message;  
+        }
+
+
+        if (data && data.sender && data.text) {
+            const sender = data.sender === 'admin' ? 'Admin' : 'Client';
+            messageElement.textContent = `${sender}: ${data.text}`;
+        } else {
+            messageElement.textContent = "Client: " + message;
+        }
+
+        
+    } catch (error) {
+        console.error('Ошибка при обработке сообщения:', error);
+        messageElement.textContent = "Client: " + message; 
+    }
+    chatContainer.appendChild(messageElement);
+}
+  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+</html>
+
+
